@@ -38,6 +38,9 @@ class Product
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'products')]
     private Collection $categories;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2)]
+    private ?string $price = null;
+
     public function __construct()
     {
         $this->medias = new ArrayCollection();
@@ -135,6 +138,18 @@ class Product
     public function removeCategory(Category $category): static
     {
         $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+
+    public function setPrice(string $price): static
+    {
+        $this->price = $price;
 
         return $this;
     }
