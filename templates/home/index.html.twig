@@ -1,20 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/home/index.css') }}">
+{% endblock %}
+
+{% block title %}Le petit Coin | Homepage{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/var/www/4labo/src/Controller/HomeController.php</code></li>
-        <li>Your template at <code>/var/www/4labo/templates/home/index.html.twig</code></li>
-    </ul>
-</div>
+    <section id="home" class="d-flex container flex-column align-items-center justify-content-center py-5">
+        <div class="d-flex container align-items-center justify-content-evenly">
+            <img src="{{ asset('img/logo.png') }}" width="200px" height="200px">
+            <div>
+                <h1>Le Petit Coin</h1>
+                <p>Un site d'achat-revente entre particulier et sans frais.</p>
+            </div>
+        </div> 
+        <div id="big-search">
+            <form class="d-flex search" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Voiture, maison, casserole ..." aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </section>
+    <section id="posts">
+        {% for post in posts %}
+            
+        {% endfor %}
+    </section>
 {% endblock %}
+

@@ -1,0 +1,7 @@
+#home {
+    #big-search {
+        form > input {
+            width: 40vw;
+        }
+    }
+}
