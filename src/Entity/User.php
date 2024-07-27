@@ -17,47 +17,50 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id;
 
-    #[ORM\Column(length: 255)]
-    private ?string $firstname;
-
-    #[ORM\Column(length: 255)]
-    private ?string $lastname;
-
     #[ORM\Column(length: 255, unique: true)]
     private ?string $mail;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstname = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lastname = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password;
 
-    #[ORM\Column(length: 20)]
-    private ?string $phone = null;
+    #[ORM\Column(length: 15, nullable: true)]
+    private ?string $phoneNumber = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
     #[ORM\Column(type: 'json')]
     private array $roles = ['ROLE_USER'];
 
-    /**
-     * @Assert\NotBlank(groups={"registration"})
-     * @Assert\Length(min=6, groups={"registration"})
-     */
+    #[Assert\NotBlank(groups: ["registration"])]
+    #[Assert\Length(min: 6, groups: ["registration"])]
     private ?string $plainPassword = null;
 
-    /**
-     * @var Collection<int, Product>
-     */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $products;
-
-    public function __construct()
-    {
-        $this->products = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+
+    public function getMail(): ?string
+    {
+        return $this->mail;
+    }
+
+    public function setMail(string $mail): static
+    {
+        $this->mail = $mail;
+
+        return $this;
     }
 
     public function getFirstname(): ?string
@@ -77,21 +80,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->lastname;
     }
 
-    public function setLastname(string $lastname): static
+    public function setLastname(?string $lastname): static
     {
         $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    public function getMail(): ?string
-    {
-        return $this->mail;
-    }
-
-    public function setMail(string $mail): static
-    {
-        $this->mail = $mail;
 
         return $this;
     }
@@ -108,31 +99,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPlainPassword(): ?string
+    public function getPhoneNumber(): ?string
     {
-        return $this->plainPassword;
+        return $this->phoneNumber;
     }
 
-    public function setPlainPassword(?string $plainPassword): self
+    public function setPhoneNumber(?string $phoneNumber): static
     {
-        $this->plainPassword = $plainPassword;
-
-        return $this;
-    }
-
-    public function getSalt(): ?string
-    {
-        return null;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(string $phone): static
-    {
-        $this->phone = $phone;
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }
@@ -142,7 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->address;
     }
 
-    public function setAddress(string $address): static
+    public function setAddress(?string $address): static
     {
         $this->address = $address;
 
@@ -158,26 +132,46 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles): static
     {
         $this->roles = $roles;
 
         return $this;
     }
 
-    public function getUsername(): string
+    public function getSalt(): ?string
     {
-        // Returns the email as the unique identifier for the user
-        return (string) $this->mail;
+        return null;
     }
 
     public function eraseCredentials(): void
     {
+        $this->plainPassword = null;
     }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    // getUserIdentifier()
+
+    public function getUsername(): string
+    {
+        return (string) $this->mail;
+    }
+
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->mail;
+        return $this->mail;
     }
 
     /**

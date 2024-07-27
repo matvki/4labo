@@ -19,7 +19,7 @@ class RegistrationFormType extends AbstractType
             ->add('firstname')
             ->add('lastname')
             ->add('mail')
-            ->add('phone')
+            ->add('phoneNumber')
             ->add('address')
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
