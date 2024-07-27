@@ -50,7 +50,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-
     public function getMail(): ?string
     {
         return $this->mail;
