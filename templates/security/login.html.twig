@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div>
+    <h1>Login</h1>
+    {{ form_start(loginForm, { 'attr': { 'class': 'form' } }) }}
+        <div class="form-group">
+            {{ form_label(loginForm._username) }}
+            {{ form_widget(loginForm._username, { 'attr': { 'class': 'form-control' } }) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(loginForm._password) }}
+            {{ form_widget(loginForm._password, { 'attr': { 'class': 'form-control' } }) }}
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            {{ form_widget(loginForm.login, { 'attr': { 'class': 'btn btn-primary' } }) }}
+            <a href="{{ path('app_register') }}" class="btn btn-outline-secondary">Register</a>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger mt-3">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+    {{ form_end(loginForm) }}
+</div>
+
+{% endblock %}

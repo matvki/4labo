@@ -1,11 +1,20 @@
 <header id="header">
     <nav class="navbar">
         <div class="container-fluid">
-            <a class="navbar-brand mb-0 h1">Le Petit Coin</a>
-            <form class="d-flex search" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-secondary" type="submit">Search</button>
-            </form>
+            <a href="{{ path('app_home') }}" class="navbar-brand mb-0 h1">Le Petit Coin</a>
+            <div class="d-flex">
+                <form class="d-flex search" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                </form>
+                {% if not is_granted('IS_AUTHENTICATED_FULLY') and login is not defined and register is not defined %}
+                    <a href="{{ path('app_login') }}" class="btn btn-secondary ms-3">Login</a>
+                {% else %}
+                    {% if login is not defined and register is not defined %}
+                        <a href="{{ path('app_logout') }}" class="btn btn-secondary ms-3">Logout</a>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
     </nav>
 </header>

@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="mt-5">
+    <h1>Register</h1>
+
+    {{ form_start(registrationForm) }}
+        <div class="form-group">
+            {{ form_label(registrationForm.firstname, 'First Name') }}
+            {{ form_widget(registrationForm.firstname, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.firstname) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.lastname, 'Last Name') }}
+            {{ form_widget(registrationForm.lastname, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.lastname) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.mail, 'Mail') }}
+            {{ form_widget(registrationForm.mail, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.mail) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.plainPassword.first, 'Password') }}
+            {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.plainPassword.first) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.plainPassword.second, 'Repeat Password') }}
+            {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.plainPassword.second) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.phoneNumber, 'Phone') }}
+            {{ form_widget(registrationForm.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.phoneNumber) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(registrationForm.address, 'Address') }}
+            {{ form_widget(registrationForm.address, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.address) }}
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center  mt-3">
+        <button type="submit" class="btn btn-primary">Register</button>
+            <a href="{{ path('app_login') }}" class="btn btn-outline-secondary">Login</a>
+        </div>
+    {{ form_end(registrationForm) }}
+</div>
+
+{% endblock %}
