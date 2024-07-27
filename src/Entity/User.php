@@ -5,36 +5,44 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
-    private ?string $username = null;
+    private ?string $firstname;
 
     #[ORM\Column(length: 255)]
-    private ?string $firstname = null;
+    private ?string $lastname;
+
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $mail;
 
     #[ORM\Column(length: 255)]
-    private ?string $lastname = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $mail = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $password = null;
+    private ?string $password;
 
     #[ORM\Column(length: 20)]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
     private ?string $address = null;
+
+    #[ORM\Column(type: 'json')]
+    private array $roles = ['ROLE_USER'];
+
+    /**
+     * @Assert\NotBlank(groups={"registration"})
+     * @Assert\Length(min=6, groups={"registration"})
+     */
+    private ?string $plainPassword = null;
 
     /**
      * @var Collection<int, Product>
@@ -50,18 +58,6 @@ class User
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
     }
 
     public function getFirstname(): ?string
@@ -112,6 +108,23 @@ class User
         return $this;
     }
 
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
     public function getPhone(): ?string
     {
         return $this->phone;
@@ -134,6 +147,37 @@ class User
         $this->address = $address;
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getUsername(): string
+    {
+        // Returns the email as the unique identifier for the user
+        return (string) $this->mail;
+    }
+
+    public function eraseCredentials(): void
+    {
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->mail;
     }
 
     /**
