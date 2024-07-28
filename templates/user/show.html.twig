@@ -6,7 +6,6 @@
     <div class="d-flex">
         <div class="container d-flex justify-content-evenly align-items-center pt-5">
             <h1>User Details</h1>
-
             <table>
                 <tr>
                     <th>Username</th>
@@ -41,7 +40,16 @@
         </div>
     </div>
     <hr>
-    <div>
-        
+    <div class="container row mx-auto">
+        {% for product in user.products %}
+            <div class="col-3 d-flex justify-content-center card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ product.price }} €</h6>
+                    <p class="card-text">{{ product.description }}</p>
+                    <a href="{{ path('product_show', { 'product': product.id }) }}" class="card-link">More details</a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}

@@ -31,7 +31,7 @@ class UserController extends AbstractController
         // check if user and current user are the same
         if ($user->getId() !== $this->getUser()->getId())
             return $this->redirectToRoute('home');
-
+// dd($user->getProducts()[0]);
         return $this->render('user/show.html.twig', [
             'user' => $user,
         ]);

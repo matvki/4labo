@@ -16,10 +16,10 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column(type: Types::BLOB)]
+    #[ORM\Column(length: 255, nullable: true)]
     private $description;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
