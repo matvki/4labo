@@ -1,20 +1,34 @@
-<header id="header">
-    <nav class="navbar">
+<header id="header" class="sticky-top">
+    <nav class="navbar sticky-top navbar-expand-lg">
         <div class="container-fluid">
             <a href="{{ path('app_home') }}" class="navbar-brand mb-0 h1">Le Petit Coin</a>
-            <div class="d-flex">
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {% if not is_granted('IS_AUTHENTICATED_FULLY') and login is not defined and register is not defined %}
+                        <li class="nav-item">
+                            <a href="{{ path('app_login') }}" class="btn btn-secondary ms-3">Login</a>
+                        </li>
+                    {% else %}
+                        {% if login is not defined and register is not defined %}
+                            <li class="dropdown nav-item">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-user"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ path('user_profile', { 'user': app.user.id }) }}">My profile</a></li>
+                                    <li><a class="btn btn-secondary dropdown-item " href="{{ path('app_logout') }}">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+            <span class="nav-item">
                 <form class="d-flex search" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-secondary" type="submit">Search</button>
                 </form>
-                {% if not is_granted('IS_AUTHENTICATED_FULLY') and login is not defined and register is not defined %}
-                    <a href="{{ path('app_login') }}" class="btn btn-secondary ms-3">Login</a>
-                {% else %}
-                    {% if login is not defined and register is not defined %}
-                        <a href="{{ path('app_logout') }}" class="btn btn-secondary ms-3">Logout</a>
-                    {% endif %}
-                {% endif %}
-            </div>
+            </span>
         </div>
     </nav>
 </header>

@@ -6,91 +6,97 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\User;
-use App\Form\UserType;
+use App\Form\EditFormType;
+use App\Form\ChangePasswordType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/user', name: 'user')]
 class UserController extends AbstractController
 {
     private Request $request;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
     {
         $this->entityManager    = $entityManager;
-    }
-
-    #[Route('', name: '')]
-    public function index(): Response
-    {
-        return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserController',
-        ]);
+        $this->passwordHasher   = $passwordHasher;
     }
 
     // get a specific user by id
-    #[Route('/get/{user}', name: '_show')]
+    #[Route('/show/{user}', name: '_profile')]
     public function show(User $user): Response
     {
+        // check if user and current user are the same
+        if ($user->getId() !== $this->getUser()->getId())
+            return $this->redirectToRoute('home');
+
         return $this->render('user/show.html.twig', [
             'user' => $user,
         ]);
     }
 
-    // create a new user from a form
-    #[Route('/create', name: '_create')]
-    public function create(Request $request): Response
+    // edit a specific user by id
+    #[Route('/edit/{user}', name: '_edit')]
+    public function edit(User $user, Request $request): Response
     {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        // check if user and current user are the same
+        if ($user->getId() !== $this->getUser()->getId())
+            return $this->redirectToRoute('home');
 
+        $form = $this->createForm(EditFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('user_show', ['user' => $user->getId()]);
+            return $this->redirectToRoute('user_profile', ['user' => $user->getId()]);
         }
 
-        return $this->render('user/createEdit.html.twig', [
+        return $this->render('registration/register.html.twig', [
             'form' => $form->createView(),
+            'title' => 'Edit Profile',
         ]);
     }
 
-    // edit an existing user
-    #[Route('/edit/{user}', name: '_edit')]
-    public function edit(Request $request, User $user): Response
+    #[Route('/edit_password/{user}', name: '_edit_password')]
+    public function changePassword(Request $request, User $user): Response
     {
-        $form = $this->createForm(UserType::class, $user);
+        // check if user and current user are the same
+        if ($user->getId() !== $this->getUser()->getId())
+            return $this->redirectToRoute('home');
 
+        $form = $this->createForm(ChangePasswordType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $newPassword    = $form->get('plainPassword')->getData();
+            $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
+            $user->setPassword($hashedPassword);
+
+            $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('user_show', ['user' => $user->getId()]);
+            return $this->redirectToRoute('user_profile', ['user' => $user->getId()]);
         }
 
-        return $this->render('user/createEdit.html.twig', [
+        return $this->render('user/editPassword.html.twig', [
             'form' => $form->createView(),
-            'user' => $user,
         ]);
     }
 
-    // delete an existing user
+    // delete a specific user by id
     #[Route('/delete/{user}', name: '_delete')]
     public function delete(User $user): Response
     {
+        // check if user and current user are the same
+        if ($user->getId() !== $this->getUser()->getId())
+            return $this->redirectToRoute('home');
+
         $this->entityManager->remove($user);
         $this->entityManager->flush();
-
-        return $this->redirectToRoute('user');
-    }
-
-    #[Route('/success', name: '_success')]
-    public function success(): Response
-    {
-        return $this->render('user/success.html.twig');
+        return $this->redirectToRoute('home');
     }
 }
