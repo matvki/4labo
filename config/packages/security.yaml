@@ -29,7 +29,8 @@ security:
 
     # Access control
     access_control:
-        - { path: ^/user/show, roles: ROLE_USER }
+        - { path: ^/user/, roles: ROLE_USER }
+        - { path: ^/product/, roles: ROLE_USER }
         # Add access control rules here
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="mb-4">Créer un nouveau produit</h1>
+
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+                <div class="mb-3">
+                    {{ form_label(form.title, 'Titre du produit', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le titre du produit'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.title) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Ajoutez une description'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.description) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.price, 'Prix', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le prix du produit'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.price) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.categories, 'Catégories', {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="form-check">
+                        {% for category in form.categories %}
+                            <div class="form-check">
+                                {{ form_widget(category, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(category, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.categories) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.media, 'Médias (Images)', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.media, {'attr': {'class': 'form-control', 'multiple': 'multiple'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.media) }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+
+                {{ form_end(form) }}
+                
+                <a href="{{ path('user_profile', { 'user': app.user.id }) }}" class="btn btn-link mt-3">Retour à la liste</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+{% endblock %}
