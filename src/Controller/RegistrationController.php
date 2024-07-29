@@ -14,8 +14,17 @@ use App\Repository\UserRepository;
 
 class RegistrationController extends AbstractController
 {
+    private UserPasswordHasherInterface $passwordHasher;
+    private EntityManagerInterface      $entityManager;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager)
+    {
+        $this->passwordHasher   = $passwordHasher;
+        $this->entityManager    = $entityManager;
+    }
+
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+    public function register(Request $request): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -24,19 +33,24 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Encode the plain password
             $plainPassword = $form->get('plainPassword')->getData();
-            $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
+            $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
             
             // Save the user entity
-            $entityManager->persist($user);
-            $entityManager->flush();
+            try {
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Something went wrong while creating the user. Please try again.');
+                return $this->redirectToRoute('app_register');
+            }
 
             return $this->redirectToRoute('app_login');
         }
 
         return $this->render('registration/register.html.twig', [
-            'form' => $form->createView(),
-            'title' => 'Register',
-            'register' => true
+            'form'      => $form->createView(),
+            'title'     => 'Register',
+            'register'  => true
         ]);
     }
 }

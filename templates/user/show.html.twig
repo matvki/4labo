@@ -6,7 +6,6 @@
     <div class="d-flex">
         <div class="container d-flex justify-content-evenly align-items-center pt-5">
             <h1>User Details</h1>
-
             <table>
                 <tr>
                     <th>Username</th>
@@ -40,4 +39,21 @@
             <a id="delete" class="btn btn-outline-danger" href="{{ path('user_delete', { 'user': user.id }) }}" onclick="return confirm('Are you sure you want to delete this item ?');">Delete user</a>
         </div>
     </div>
+    <hr>
+    <div class="container row mx-auto">
+        {% for product in user.products %}
+            <div class="col-3 d-flex justify-content-center card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ product.price }} €</h6>
+                    <p class="card-text">{{ product.description }}</p>
+                    <a href="{{ path('product_show', { 'product': product.id }) }}" class="card-link">Manage product</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('show_user') }}
 {% endblock %}

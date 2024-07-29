@@ -21,11 +21,11 @@ class HomeController extends AbstractController
     public function index(): Response
     {
         // get 10 last posts
-        $posts = $this->emi->getRepository(Product::class)->findBy([], ['id' => 'DESC'], 10);
+        $products = $this->emi->getRepository(Product::class)->findBy([], ['id' => 'DESC'], 10);
 
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
-            'posts' => $posts
+            'controller_name'   => 'HomeController',
+            'products'          => $products
         ]);
     }
 }
