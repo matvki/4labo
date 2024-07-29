@@ -47,9 +47,13 @@
                     <h5 class="card-title">{{ product.title }}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{ product.price }} €</h6>
                     <p class="card-text">{{ product.description }}</p>
-                    <a href="{{ path('product_show', { 'product': product.id }) }}" class="card-link">More details</a>
+                    <a href="{{ path('product_show', { 'product': product.id }) }}" class="card-link">Manage product</a>
                 </div>
             </div>
         {% endfor %}
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('show_user') }}
 {% endblock %}

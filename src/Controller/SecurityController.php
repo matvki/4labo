@@ -13,8 +13,17 @@ use App\Form\LoginFormType;
 
 class SecurityController extends AbstractController
 {
+    private AuthenticationUtils     $authenticationUtils;
+    private UserProviderInterface   $userProvider;
+
+    public function __construct(AuthenticationUtils $authenticationUtils, UserProviderInterface $userProvider)
+    {
+        $this->authenticationUtils = $authenticationUtils;
+        $this->userProvider        = $userProvider;
+    }
+
     #[Route('/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils, Request $request, UserProviderInterface $userProvider): Response
+    public function login(Request $request): Response
     {
         $form = $this->createForm(LoginFormType::class);
 
@@ -28,15 +37,15 @@ class SecurityController extends AbstractController
         }
 
         // Get login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
+        $error      = $this->authenticationUtils->getLastAuthenticationError();
         // Last username entered by the user
-        $lastmail = $authenticationUtils->getLastUsername();
+        $lastmail   = $this->authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [
             'loginForm' => $form->createView(),
             'last_mail' => $lastmail,
-            'error' => $error,
-            'login' => true,
+            'error'     => $error,
+            'login'     => true,
         ]);
     }
 }

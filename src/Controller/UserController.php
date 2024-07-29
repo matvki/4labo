@@ -15,7 +15,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 #[Route('/user', name: 'user')]
 class UserController extends AbstractController
 {
-    private Request $request;
+    private Request                     $request;
     private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
@@ -31,7 +31,7 @@ class UserController extends AbstractController
         // check if user and current user are the same
         if ($user->getId() !== $this->getUser()->getId())
             return $this->redirectToRoute('home');
-// dd($user->getProducts()[0]);
+
         return $this->render('user/show.html.twig', [
             'user' => $user,
         ]);
@@ -56,7 +56,7 @@ class UserController extends AbstractController
         }
 
         return $this->render('registration/register.html.twig', [
-            'form' => $form->createView(),
+            'form'  => $form->createView(),
             'title' => 'Edit Profile',
         ]);
     }
@@ -76,8 +76,12 @@ class UserController extends AbstractController
             $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
             $user->setPassword($hashedPassword);
 
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            try {
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+            } catch (\Exception $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
 
             return $this->redirectToRoute('user_profile', ['user' => $user->getId()]);
         }
@@ -95,8 +99,14 @@ class UserController extends AbstractController
         if ($user->getId() !== $this->getUser()->getId())
             return $this->redirectToRoute('home');
 
-        $this->entityManager->remove($user);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->remove($user->getProducts());
+            $this->entityManager->remove($user);
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+    
         return $this->redirectToRoute('home');
     }
 }

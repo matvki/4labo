@@ -16,9 +16,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/product', name: 'product')]
 class ProductController extends AbstractController
 {
-    private Request $request;
-    private SluggerInterface $slugger;
-    private ValidatorInterface $validator;
+    private SluggerInterface        $slugger;
+    private ValidatorInterface      $validator;
+    private EntityManagerInterface  $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager, SluggerInterface $slugger, ValidatorInterface $validator)
     {
@@ -52,14 +52,14 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $mediaFiles = $form->get('media')->getData();
+            $mediaFiles     = $form->get('media')->getData();
+            $mediaEntities  = [];
 
             // Encode media files in base64
-            $mediaEntities = [];
             foreach ($mediaFiles as $mediaFile) {
-                $base64Content = base64_encode(file_get_contents($mediaFile->getPathname()));
+                $base64Content  = base64_encode(file_get_contents($mediaFile->getPathname()));
+                $media          = new Media();
 
-                $media = new Media();
                 $media->setMedia($base64Content);
                 $media->setProduct($product);
                 $mediaEntities[] = $media;
@@ -68,13 +68,17 @@ class ProductController extends AbstractController
             $errors = $this->validator->validate($product);
 
             if (count($errors) == 0) {
-                foreach ($mediaEntities as $media) {
+                foreach ($mediaEntities as $media)
                     $this->entityManager->persist($media);
-                }
 
                 $product->setUser($this->getUser()); // Set the user
-                $this->entityManager->persist($product);
-                $this->entityManager->flush();
+
+                try {
+                    $this->entityManager->persist($product);
+                    $this->entityManager->flush();
+                } catch (\Exception $e) {
+                    $this->addFlash('error', $e->getMessage());
+                }
 
                 return $this->redirectToRoute('user_profile', ['user' => $this->getUser()->getId()]);
             } else {
@@ -86,7 +90,72 @@ class ProductController extends AbstractController
 
         return $this->render('product/create.html.twig', [
             'product'   => $product,
+            'title'     => 'Nouveau produit',
             'form'      => $form->createView(),
         ]);
+    }
+
+    #[Route('/edit/{product}', name: '_edit')]
+    public function edit(Product $product, Request $request): Response
+    {
+        $form = $this->createForm(ProductType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $mediaFiles     = $form->get('media')->getData();
+            $mediaEntities  = [];
+
+            // Encode media files in base64
+            foreach ($mediaFiles as $mediaFile) {
+                $base64Content  = base64_encode(file_get_contents($mediaFile->getPathname()));
+                $media          = new Media();
+
+                $media->setMedia($base64Content);
+                $media->setProduct($product);
+                $mediaEntities[] = $media;
+            }
+
+            $errors = $this->validator->validate($product);
+
+            if (count($errors) == 0) {
+                foreach ($mediaEntities as $media)
+                    $this->entityManager->persist($media);
+
+                $product->setUser($this->getUser()); // Set the user
+
+                try {
+                    $this->entityManager->persist($product);
+                    $this->entityManager->flush();
+                } catch (\Exception $e) {
+                    $this->addFlash('error', $e->getMessage());
+                }
+
+                return $this->redirectToRoute('user_profile', ['user' => $this->getUser()->getId()]);
+            } else {
+                foreach ($errors as $error)
+                    $this->addFlash('error', $error->getMessage());
+            }
+        }
+
+
+        return $this->render('product/create.html.twig', [
+            'product' => $product,
+            'title'   => 'Modifier le produit',
+            'update'  => true,
+            'form'    => $form->createView(),
+        ]);
+    }
+
+    #[Route('/delete/{product}', name: '_delete')]
+    public function delete(Product $product): Response
+    {
+        try {
+            $this->entityManager->remove($product);
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('user_profile', ['user' => $this->getUser()->getId()]);
     }
 }
