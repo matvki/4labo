@@ -27,8 +27,8 @@
                 </ul>
             </div>
             <span class="nav-item">
-                <form class="d-flex search" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="d-flex search" role="search" method="get" action="{{ path('product_search') }}">
+                    <input class="form-control me-2" type="search" placeholder="Electronics, Clothing, Toys, Automotive ..." aria-label="Search" name="query">
                     <button class="btn btn-outline-secondary" type="submit">Search</button>
                 </form>
             </span>

@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Repository\ProductRepository;
 
 #[Route('/product', name: 'product')]
 class ProductController extends AbstractController
@@ -19,12 +20,14 @@ class ProductController extends AbstractController
     private SluggerInterface        $slugger;
     private ValidatorInterface      $validator;
     private EntityManagerInterface  $entityManager;
+    private ProductRepository       $productRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, SluggerInterface $slugger, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, SluggerInterface $slugger, ValidatorInterface $validator, ProductRepository $productRepository)
     {
-        $this->entityManager    = $entityManager;
-        $this->slugger          = $slugger;
-        $this->validator        = $validator;
+        $this->entityManager        = $entityManager;
+        $this->slugger              = $slugger;
+        $this->validator            = $validator;
+        $this->productRepository    = $productRepository;
     }
 
     #[Route('', name: '')]
@@ -38,8 +41,14 @@ class ProductController extends AbstractController
     #[Route('/get/{product}', name: '_show')]
     public function show(Product $product): Response
     {
+        $owner = false;
+        // check if user is the owner of the product
+        if ($product->getUser() === $this->getUser())
+            $owner = true;
+
         return $this->render('product/show.html.twig', [
             'product' => $product,
+            'owner'   => $owner
         ]);
     }
 
@@ -91,7 +100,7 @@ class ProductController extends AbstractController
         return $this->render('product/create.html.twig', [
             'product'   => $product,
             'title'     => 'Nouveau produit',
-            'form'      => $form->createView(),
+            'form'      => $form->createView()
         ]);
     }
 
@@ -142,7 +151,7 @@ class ProductController extends AbstractController
             'product' => $product,
             'title'   => 'Modifier le produit',
             'update'  => true,
-            'form'    => $form->createView(),
+            'form'    => $form->createView()
         ]);
     }
 
@@ -157,5 +166,22 @@ class ProductController extends AbstractController
         }
 
         return $this->redirectToRoute('user_profile', ['user' => $this->getUser()->getId()]);
+    }
+
+    #[Route('/search', name: '_search')]
+    public function search(Request $request)
+    {
+        $query      = $request->query->all()['query'];
+        $products   = [];
+
+        if ($query)
+            $products = $this->productRepository->searchFor($query);
+        else
+            return $this->redirectToRoute('home');
+        
+        return $this->render('product/searchResult.html.twig', [
+            'products'  => $products,
+            'query'     => $query,
+        ]);
     }
 }
