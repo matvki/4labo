@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}{{ title }}{% endblock %}</title>
+        <link rel="icon" href="/img/logo.png">
+        <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+        {% include 'header.html.twig' %}
+
+        <div id="content" class="d-flex justify-content-evenly align-items-center">
+            <div class="mt-5">
+                <h1>{{ title }}</h1>
+
+                {{ form_start(form) }}
+                    <div class="form-group">
+                        {{ form_label(form.firstname, 'First Name') }}
+                        {{ form_widget(form.firstname, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.firstname) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.lastname, 'Last Name') }}
+                        {{ form_widget(form.lastname, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.lastname) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.mail, 'Mail') }}
+                        {{ form_widget(form.mail, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.mail) }}
+                    </div>
+
+                    {% if form.plainPassword is defined %}
+                        <div class="form-group">
+                            {{ form_label(form.plainPassword.first, 'Password') }}
+                            {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.plainPassword.first) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.plainPassword.second, 'Repeat Password') }}
+                            {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.plainPassword.second) }}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        {{ form_label(form.phoneNumber, 'Phone') }}
+                        {{ form_widget(form.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.phoneNumber) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.address, 'Address') }}
+                        {{ form_widget(form.address, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.address) }}
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center  mt-3">
+                        <button type="submit" class="btn btn-primary">Validate</button>
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <a class="btn btn-outline-secondary" href="{{ path('user_profile', { 'user': app.user.id }) }}">Go Back</a>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="btn btn-outline-secondary">Login</a>
+                        {% endif %}
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        {% include 'footer.html.twig' %}
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+        <script src="https://kit.fontawesome.com/81d14a2741.js" crossorigin="anonymous"></script>
+    </body>
+</html>
