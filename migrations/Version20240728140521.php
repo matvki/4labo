@@ -22,6 +22,7 @@ final class Version20240728140521 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP INDEX UNIQ_D34A04AD2B36786B ON product');
         $this->addSql('ALTER TABLE product CHANGE description description VARCHAR(255) DEFAULT NULL');
+        $this->addSql("INSERT INTO categories (name) VALUES ('Electronics'), ('Clothing'), ('Home & Kitchen'), ('Books'), ('Toys & Games'), ('Beauty & Personal Care'), ('Sports & Outdoors'), ('Automotive'), ('Health & Wellness'), ('Office Supplies')");
     }
 
     public function down(Schema $schema): void
