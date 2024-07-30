@@ -18,7 +18,7 @@ sudo apt install -y php php-cli php-mbstring php-xml php-zip php-curl php-mysql 
 
 #### Clone du repos Git
 ```shell
-git clone https://github.com/votre-utilisateur/votre-projet.git
+git clone https://github.com/matvki/4labo.git
 cd votre-projet
 ```
 #### Installation des dépendances PHP avec Composer:
